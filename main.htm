@@ -5,17 +5,11 @@
   <script src="main_files/jquery.min.js"></script>
   <script src="main_files/shortstraw.js"></script>
   <script src="main_files/chinesestrokes.js"></script>
-  <script>
-    function c1(){
-      var d = new Date();
-    }
-    c1();
-  </script>	
 </head><body>
   <div id="main">
     <canvas id="stroke_input_canvas" width="400" height="300"></canvas>
     <button type="button" onclick="clearcanvas(); return false;">Clear for new character</button>
-    <div id="suggestions" style="-webkit-transform: rotate(0deg);"></div>
+    <div id="suggestions"></div>
     <textarea id="wordsOut"></textarea>
   </div>
   <script>
@@ -85,8 +79,7 @@
   function chineseword(a) { return ('\&#0'+parseInt(a,16)+';'); }
   
 	function analyze(stroke) {
-		
-		// We use short straw algorithm for sub stroke detection
+		// Short straw algorithm for sub stroke detection
 		// It works for simple strokes, but we should handle its substrokes more carefully (TODO)
 		var corners = shortStraw(stroke);
 		
@@ -159,20 +152,11 @@
 				bestscore = score;
 			}
 		}
-    
 		possible.sort(function(a,b){
       return b.s - a.s; //.length
     });
-
-		$('#b').val(bestmatch[0]);
-		$('#word').html(chineseword(bestmatch[0]));
 		
-		for (var i=1;((i<10)&&possible[i]);i++) {
-			$('#word').append(chineseword(possible[i].w)
-				+'<small>'+possible[i].s +'|'+JSON.stringify(possible[i].huh)+'</small>');
-		}
-		
-		$('#suggestions').html('');
+		document.getElementById('suggestions').innerHTML = '';
 		for (var i=0;((i<9)&&possible[i]);i++) {
 			var sug = document.createElement('span');
 			
@@ -206,7 +190,6 @@
 			
 			ctx2.beginPath();
 			ctx2.moveTo(o.x, o.y);
-			//debug(x);
 
 			var h = bestmatch[i][1]*100; 
 			var d = -bestmatch[i][0];
@@ -217,15 +200,6 @@
 			ctx2.closePath();
 			ctx2.stroke();
 		}
-	}
-	
-	function normalizeLength(a, b) {
-		w = b.w;
-		h = b.h;
-		
-		dimensionSquare = w>h ? w*w : h*h;
-		normalized = distance (b) / Math.pow(dimensionSquared*2, 1/2);
-		return Math.min(normalized, 1.0);
 	}
 	
 	function match(strokeDescriptor, charDescriptor) {
@@ -253,7 +227,7 @@
     ctx.clearRect(0, 0, canvas.width , canvas.height) ;
     mousestrokes = [];
     strokeDescriptor = [];
-    $('#suggestions').html('');
+    document.getElementById('suggestions').innerHTML = '';
   }
   
   function drawline(x1, y1, x2, y2) {
