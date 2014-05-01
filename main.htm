@@ -82,9 +82,7 @@
 		analyze(strokeXYs);
 	}
 	
-	function d2h(d) {return d.toString(16);}
-	function h2d(h) {return parseInt(h,16);}
-	function chineseword(a) { return ('\&#0'+h2d(a)+';'); }
+  function chineseword(a) { return ('\&#0'+parseInt(a,16)+';'); }
   
 	function analyze(stroke) {
 		
@@ -250,14 +248,7 @@
 		}
 		return score;
 	}
-	
-	function drawdot(col, line){
-		ctx.strokeStyle = "black";
-		ctx.beginPath(); 
-		ctx.arc( startx+col*objWidth+objWidth*3/4, line/2*staffHeight+ starty-5,2,0,Math.PI*2,true);
-		ctx.stroke();
-	}
-         
+        
   function clearcanvas() {
     ctx.clearRect(0, 0, canvas.width , canvas.height) ;
     mousestrokes = [];
