@@ -24,18 +24,18 @@
   
   canvas.addEventListener("mousemove", function(e){ 
     if (clicking) {
-      var x = e.pageX - $(this).offset().left;
-      var y = e.pageY - $(this).offset().top;
+      var x = e.pageX - canvas.offsetLeft;
+      var y = e.pageY - canvas.offsetTop;
       dragClick(x,y);}
   }, false);
   canvas.addEventListener("mousedown", function(e){ 
-    var x = e.pageX - $(this).offset().left;
-		var y = e.pageY - $(this).offset().top;
+    var x = e.pageX - canvas.offsetLeft;
+		var y = e.pageY - canvas.offsetTop;
 		startClick(x,y);
   }, false);
   canvas.addEventListener("mouseup", function(e){
-    var x = e.pageX - $(this).offset().left;
-		var y = e.pageY - $(this).offset().top;
+    var x = e.pageX - canvas.offsetLeft;
+		var y = e.pageY - canvas.offsetTop;
 		endClick(x,y);
   }, false);
 
@@ -162,10 +162,10 @@
 			
 			$(sug).click(function() {
 				$('#wordsOut').append($(this).html());
-			}).append(chineseword(possible[i].w))
-			.attr('class', 'sugItem');
+			}).append(chineseword(possible[i].w));
 
-			$('#suggestions').append(sug);
+			sug.setAttribute('class', 'sugItem');
+      document.getElementById('suggestions').appendChild(sug);
 		}
 	}
 	
@@ -177,16 +177,13 @@
 		for (var i=1;i<bestmatch.length;i++) {
 			cdi.push({d:bestmatch[i][0], l:bestmatch[i][1]});
 			var d = bestmatch[i][0];
-			
 			var o = {x:100,y:i/bestmatch.length*300};
 			
-			// MAke a DOT
 			ctx2.beginPath();
 			ctx2.arc(o.x, o.y, 5, 0, Math.PI*2, true);
 			ctx2.closePath();
 			ctx2.fill();
-			
-			ctx2.fillText($('#c').html()+i, o.x-20, o.y-20);
+			ctx2.fillText(i, o.x-20, o.y-20);
 			
 			ctx2.beginPath();
 			ctx2.moveTo(o.x, o.y);
