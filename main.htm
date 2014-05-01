@@ -4,87 +4,48 @@
   <link rel="stylesheet" href="style/main.css" />
   <script src="main_files/jquery.min.js"></script>
   <script src="main_files/shortstraw.js"></script>
-  <script src="main_files/chinesestrokes.js"></script>	
-</head><body>
+  <script src="main_files/chinesestrokes.js"></script>
   <script>
     function c1(){
-      d = new Date();
-    }
-    
-    function c2(r) {
-      d2 = new Date();
-      $('#word').html(r+" " +(d2.getTime()-d.getTime())+"ms");
+      var d = new Date();
     }
     c1();
-  </script>
-    <div class="smallContainer">
-      <div style="height:25px">
-        <input type="button" onclick="clearcanvas(); return false;" value="Clear for new character" style="margin:0;">
-      </div>
-      <canvas id="stroke_input_canvas" width="400" height="300"></canvas>
-    </div>
-    <div class="smallContainer">
-      <div id="suggestions" style="-webkit-transform: rotate(0deg);"></div>
-    </div>
-</div>
-<div style="padding:5px; margin:5px;">
-	<div id="word" style="font-size:20px">Matched character in  38ms</div>
-	<textarea id="wordsOut"></textarea>
-</div>
-
-
-<script>
-	
+  </script>	
+</head><body>
+  <div id="main">
+    <canvas id="stroke_input_canvas" width="400" height="300"></canvas>
+    <button type="button" onclick="clearcanvas(); return false;">Clear for new character</button>
+    <div id="suggestions" style="-webkit-transform: rotate(0deg);"></div>
+    <textarea id="wordsOut"></textarea>
+  </div>
+  <script>
 	var chinesestrokes = strokes;
-	c2('Okay! Data files loaded in ');
-	$('#word').append('. Please draw a chinese character in the left box.');
-	
-	// UI Config
-	var canvas;
-	var ctx;
 	var clicking = false;
          	 
 	// In memory data struct
 	var mousestrokes = [];
-	$(document).ready(function(){
-	 	init();
+	var canvas = document.getElementById('stroke_input_canvas');
+    var ctx = canvas.getContext("2d");
+    $('#stroke_input_canvas').mousemove(function(e){
+		if (!clicking) return ;
+		var x = e.pageX - $(this).offset().left ;
+		var y = e.pageY - $(this).offset().top ;
+		dragClick(x,y);
+		$('#omw_debug').html("moving X: " + x + " Y: " + y); 
 	});
-	
-	function init() {
 		
-         	 canvas = document.getElementById('stroke_input_canvas'); //[0]
-         	 ctx = canvas.getContext("2d");
-         	 
-         	 if (!ctx){ 
-         	 	 alert("Your browser isn't modern enough to run this application! :(");
-         	 	 return;
-         	 }
-         	 
-         	 $('#stroke_input_canvas').mousemove(function(e){
-         	 	if (!clicking) return ;
-			var x = e.pageX - $(this).offset().left ;
-			var y = e.pageY - $(this).offset().top ;
-			dragClick(x,y);
-			$('#omw_debug').html("moving X: " + x + " Y: " + y); 
-		});
-		
-		$('#stroke_input_canvas').mousedown(function(e){
-			var x = e.pageX - $(this).offset().left;
-			var y = e.pageY - $(this).offset().top ;
-			
-			 startClick(x,y);
-			$('#omw_debug').html("Clicked--> X: " + x + " Y: " + y); 
-		}).mouseup(function(e) {
-			var x = e.pageX - $(this).offset().left;
-			var y = e.pageY - $(this).offset().top ;
-			endClick(x,y);
-			$('#omw_debug').html("Done Clicking"); 
-		});
-		
-         	 
-	}
-	
-	
+	$('#stroke_input_canvas').mousedown(function(e){
+		var x = e.pageX - $(this).offset().left;
+		var y = e.pageY - $(this).offset().top ;
+		startClick(x,y);
+		$('#omw_debug').html("Clicked--> X: " + x + " Y: " + y); 
+	}).mouseup(function(e) {
+		var x = e.pageX - $(this).offset().left;
+		var y = e.pageY - $(this).offset().top ;
+		endClick(x,y);
+		$('#omw_debug').html("Done Clicking"); 
+	});
+
 	var strokeXYs ;
 	var lastPt;
 	var minx, miny, maxx, maxy; 
@@ -684,12 +645,9 @@
 			alert(found);
 			// kong html enitity 24656 font code 6050  0-->dbzb35  /_d_3130
 		}
-         
-  
 </script>
 
-<script src="./main_files/ga.js" type="text/javascript"></script><script src="./main_files/ga(1).js" type="text/javascript"></script> 
-<script type="text/javascript"> 
+<script> 
 try {
 var pageTracker = _gat._getTracker("UA-7549263-1");
 pageTracker._trackPageview();
