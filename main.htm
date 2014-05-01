@@ -161,12 +161,10 @@
 				bestscore = score;
 			}
 		}
-		
-		function sortByLength(a,b){
-			return b.s - a.s; //.length
-		}
     
-		possible.sort(sortByLength);
+		possible.sort(function(a,b){
+      return b.s - a.s; //.length
+    });
 
 		$('#b').val(bestmatch[0]);
 		$('#word').html(chineseword(bestmatch[0]));
@@ -182,8 +180,6 @@
 			
 			$(sug).click(function() {
 				$('#wordsOut').append($(this).html());
-			}).dblclick(function() {
-				spin($(this));				
 			}).append(chineseword(possible[i].w))
 			.attr('class', 'sugItem');
 
@@ -191,7 +187,6 @@
 		}
 	}
 	
-	// For analyzing Best Match
 	function analyzeBestMatch(bestmatch) {
 		cdi = [];
 		var ctx2 = document.getElementById('c2').getContext("2d"); //[0]
@@ -259,9 +254,7 @@
 	function drawdot(col, line){
 		ctx.strokeStyle = "black";
 		ctx.beginPath(); 
-		ctx.arc(
-			startx+ col*objWidth +objWidth*3/4, line/2*staffHeight+ starty-5
-			,2,0,Math.PI*2,true);
+		ctx.arc( startx+col*objWidth+objWidth*3/4, line/2*staffHeight+ starty-5,2,0,Math.PI*2,true);
 		ctx.stroke();
 	}
          
@@ -278,41 +271,6 @@
 		ctx.lineTo(x2,y2);
 		ctx.closePath();
 		ctx.stroke();
-  }
-  
-  function parse(inp) {
-    var hsbw = null;
-    var l = inp.split('\n');
-    for(var i=0; i<l.length; i++) {
-      //gather args
-      var parts = l[i].split(' ');
-      if(parts.length > 0) {
-        var args = [];
-        for(var j=0; j<parts.length-1; j++) {
-          args[args.length] = parts[j].replace('null', '');
-        }
- 	
-      //execute func
-      var comm = parts[parts.length-1];
-      if(comm) {
-        if(typeof(eval('ctx2.'+comm)) == 'function') {
-          var call = 'ctx2.'+comm+'('+args.join(', ')+'); ';
-          if(comm == 'hsbw') {
-            hsbw = call;
-          } else {
-            if(comm.indexOf('move') == -1) {
-              var from = {x: customFont.p.x, y: customFont.p.y }
-              customFont.points[customFont.points.length] = { x:customFont.p.x, y:customFont.p.y }
-            }
-            eval(call);
-          }
-        }
-      }
-      }
-    }
-    if(hsbw) { //hsbw needs to be at end, not start
-      eval(hsbw);
-    }
   }
 </script>
 </body></html>
