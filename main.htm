@@ -63,15 +63,12 @@
 	}
 
 	function dragClick(x,y) {
-		if ((new Date().getTime()-d)<50) return; // 1000/50 fps. Prevents too much CPU consumption
 		var d = new Date();
-
-		var pt = {x:x,y:y};
-		if ((pt.x==lastPt.x) && (pt.y==lastPt.y)) return ;
+		if ((x==lastPt.x) && (y==lastPt.y)) return ;
 		
-		strokeXYs.push(pt);
-		lastPt = pt;
-		
+    lastPt = {x:x,y:y};
+		strokeXYs.push(lastPt);
+  
 		ctx.lineTo(x,y);
 		ctx.stroke();
 	}
@@ -82,7 +79,6 @@
 		ctx.stroke();
 		strokeXYs.push({x:x,y:y});
 		mousestrokes.push(strokeXYs);
-		
 		analyze(strokeXYs);
 	}
 	
@@ -93,8 +89,7 @@
 	function analyze(stroke) {
 		
 		// We use short straw algorithm for sub stroke detection
-		// It works for simple strokes, but we should handle its substrokes 
-		// more carefully (TODO)
+		// It works for simple strokes, but we should handle its substrokes more carefully (TODO)
 		var corners = shortStraw(stroke);
 		
 		// Lets draw shortStrawPoints in RED.
@@ -129,7 +124,6 @@
 		var h = ymax - ymin;
 		var dimensionSquared = (w>h) ? w*w : h*h;
 		var normalizer = Math.pow(dimensionSquared*2, 1/2);
-		
 		
 		// Now let's Convert to Gradient and Length
 		for (var i=1;i<corners.length;i++) {
@@ -221,10 +215,10 @@
 			ctx2.moveTo(o.x, o.y);
 			//debug(x);
 
-			var h =bestmatch[i][1]*100; 
+			var h = bestmatch[i][1]*100; 
 			var d = -bestmatch[i][0];
-			var x  = Math.cos(d)* h;
-			var y =  Math.sin(d)* h;
+			var x = Math.cos(d)* h;
+			var y = Math.sin(d)* h;
 			
 			ctx2.lineTo(o.x + x, o.y + y);
 			ctx2.closePath();
@@ -233,22 +227,16 @@
 	}
 	
 	function normalizeLength(a, b) {
-		w = b.w
+		w = b.w;
 		h = b.h;
 		
 		dimensionSquare = w>h ? w*w : h*h;
-		normalizer = Math.pow(dimensionSquared*2, 1/2);
-		normalized = distance (b) / normailizer;
-		normalized = Math.min (normalized, 1.0);
-		return normalized;
+		normalized = distance (b) / Math.pow(dimensionSquared*2, 1/2);
+		return Math.min(normalized, 1.0);
 	}
 	
 	function match(strokeDescriptor, charDescriptor) {
 		var score = 0;
-		//var strokeCharDiff = charDescriptor.length - strokeDescriptor.length; 
-		//if (strokeDescriptor.length > charDescriptor.length+5) return -1;
-		//if (strokeDescriptor.length +5 < charDescriptor.length+5) return -1;		
-		//score += (20-strokeCharDiff)/20*100;
 		
 		if (strokeDescriptor.length != charDescriptor.length) return -1;
 		for (var i in strokeDescriptor) { //var i= 1; i< strokeDescriptor.length; i++
@@ -276,16 +264,12 @@
 			,2,0,Math.PI*2,true);
 		ctx.stroke();
 	}
-	
-  function radiansToDegress(x) {
-		return x * 180 /  Math.PI
-	}
          
   function clearcanvas() {
     ctx.clearRect(0, 0, canvas.width , canvas.height) ;
     mousestrokes = [];
     strokeDescriptor = [];
-    $('#suggestions').css('background','').html('');
+    $('#suggestions').html('');
   }
   
   function drawline(x1, y1, x2, y2) {
