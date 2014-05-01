@@ -24,27 +24,26 @@
          	 
 	// In memory data struct
 	var mousestrokes = [];
-	var canvas = document.getElementById('stroke_input_canvas');
-    var ctx = canvas.getContext("2d");
-    $('#stroke_input_canvas').mousemove(function(e){
-		if (!clicking) return ;
-		var x = e.pageX - $(this).offset().left ;
-		var y = e.pageY - $(this).offset().top ;
-		dragClick(x,y);
-		$('#omw_debug').html("moving X: " + x + " Y: " + y); 
-	});
-		
-	$('#stroke_input_canvas').mousedown(function(e){
-		var x = e.pageX - $(this).offset().left;
-		var y = e.pageY - $(this).offset().top ;
+	
+  var canvas = document.getElementById('stroke_input_canvas');
+  var ctx = canvas.getContext("2d");
+  
+  canvas.addEventListener("mousemove", function(e){ 
+    if (clicking) {
+      var x = e.pageX - $(this).offset().left;
+      var y = e.pageY - $(this).offset().top;
+      dragClick(x,y);}
+  }, false);
+  canvas.addEventListener("mousedown", function(e){ 
+    var x = e.pageX - $(this).offset().left;
+		var y = e.pageY - $(this).offset().top;
 		startClick(x,y);
-		$('#omw_debug').html("Clicked--> X: " + x + " Y: " + y); 
-	}).mouseup(function(e) {
-		var x = e.pageX - $(this).offset().left;
-		var y = e.pageY - $(this).offset().top ;
+  }, false);
+  canvas.addEventListener("mouseup", function(e){
+    var x = e.pageX - $(this).offset().left;
+		var y = e.pageY - $(this).offset().top;
 		endClick(x,y);
-		$('#omw_debug').html("Done Clicking"); 
-	});
+  }, false);
 
 	var strokeXYs ;
 	var lastPt;
@@ -61,13 +60,11 @@
 		ctx.lineWidth = 2.5; 
 		ctx.beginPath();
 		ctx.moveTo(x,y);
-		 d = new Date();
 	}
-	
-	var d;
+
 	function dragClick(x,y) {
 		if ((new Date().getTime()-d)<50) return; // 1000/50 fps. Prevents too much CPU consumption
-		d = new Date();
+		var d = new Date();
 
 		var pt = {x:x,y:y};
 		if ((pt.x==lastPt.x) && (pt.y==lastPt.y)) return ;
@@ -77,7 +74,6 @@
 		
 		ctx.lineTo(x,y);
 		ctx.stroke();
-		
 	}
 	
 	function endClick(x,y) {
@@ -93,8 +89,7 @@
 	function d2h(d) {return d.toString(16);}
 	function h2d(h) {return parseInt(h,16);}
 	function chineseword(a) { return ('\&#0'+h2d(a)+';'); }
-
-	
+  
 	function analyze(stroke) {
 		
 		// We use short straw algorithm for sub stroke detection
@@ -109,7 +104,6 @@
 		ctx.moveTo(corners[0].x,corners[0].y);
 		for (var i in corners) {
 			ctx.lineTo(corners[i].x,corners[i].y);
-		
 		}
 		ctx.stroke();
 		
@@ -145,31 +139,25 @@
 			var dy = p1.y - p2.y;
 			var dx = p1.x - p2.x;
 			
-			var length = Math.pow(dy*dy + dx*dx, 1/2);
 			//Lets get normalized length instead
-			var normalized = length / normalizer;
+			var normalized = Math.pow(dy*dy + dx*dx, 1/2) / normalizer;
 			//normalized = Math.min (normalized, 1.0);
 			var direction = Math.PI -  Math.atan2(dy, dx);
 			
 			strokeDescriptor.push({d:direction, l:normalized});
 		}
 		
-		c1();
-		
-		var score;
 		var possible = [];
 		var bestmatch = '';
 		var bestscore = 0;
-		var cd, cdi;
 		for (var c in chinesestrokes) {
-			cd  = chinesestrokes[c];
-			cdi = [];
+			var cd  = chinesestrokes[c];
+			var cdi = [];
 			for (var i=1;i<cd.length;i++) {
 				cdi.push({d:cd[i][0], l:cd[i][1]});
 			}
 			
-			
-			score = match( strokeDescriptor, cdi);
+			var score = match( strokeDescriptor, cdi);
 			if (score>-1) {
 				possible.push({w:cd, s:score, huh:cdi});
 			}
@@ -180,12 +168,10 @@
 			}
 		}
 		
-		function sortByLength(a,b)
-		{
+		function sortByLength(a,b){
 			return b.s - a.s; //.length
 		}
-		
-		
+    
 		possible.sort(sortByLength);
 
 		$('#b').val(bestmatch[0]);
@@ -206,37 +192,9 @@
 				spin($(this));				
 			}).append(chineseword(possible[i].w))
 			.attr('class', 'sugItem');
-			
-			/*
-			.mouseover(function() {
-				$(this).css({backgroundColor:'white'});
-			}).mouseout(function() {
-				$(this).css({backgroundColor:''});
-			});*/
-			
+
 			$('#suggestions').append(sug);
 		}
-		
-		
-		
-		
-		c2('Matched character in ');
-		//debug(bestmatch);
-		//$('#c').html(chineseword(bestmatch[0]) +  ' ' + h2d(bestmatch[0]));
-
-		
-		
-		/** Debug purposes only
-		
-		analyzeBestMatch(bestmatch);
-		
-		$('#word').append('<br/>WEEEEE You writing<br/>');
-		for (var i in strokeDescriptor) {
-			$('#word').append('d: '+strokeDescriptor[i].d+' l:'
-				+strokeDescriptor[i].l+ '<br/>');
-		}
-		*/
-	
 	}
 	
 	// For analyzing Best Match
@@ -249,16 +207,13 @@
 			cdi.push({d:bestmatch[i][0], l:bestmatch[i][1]});
 			var d = bestmatch[i][0];
 			
-			
 			var o = {x:100,y:i/bestmatch.length*300};
-			
 			
 			// MAke a DOT
 			ctx2.beginPath();
 			ctx2.arc(o.x, o.y, 5, 0, Math.PI*2, true);
 			ctx2.closePath();
 			ctx2.fill();
-			
 			
 			ctx2.fillText($('#c').html()+i, o.x-20, o.y-20);
 			
@@ -274,13 +229,6 @@
 			ctx2.lineTo(o.x + x, o.y + y);
 			ctx2.closePath();
 			ctx2.stroke();
-			//cos r = x / h
-			//sin r = y / h
-			
-			/* Debugging purpoes
-			$('#word').append('d: '+bestmatch[i][0]+' l:'
-				+bestmatch[i][1]+ '<br/>');
-				*/
 		}
 	}
 	
@@ -315,22 +263,11 @@
 			ds = 100* ( Math.PI*2 - ds)/(Math.PI*2);
 			//ds = Math.min(ds,100);
 			
-			/*
-			ABs
-			
-			*/ //ABS
-			/*
-			var ds = strokeDescriptor[i].d - charDescriptor[i].d;
-			ds = Math.abs(Math.atan( (ds)/(1+strokeDescriptor[i].d* charDescriptor[i].d ) ));
-			ds = 100- ds;
-			*/
-			 score +=  ds+  dl*charDescriptor[i].l ; 
+      score +=  ds+  dl*charDescriptor[i].l ; 
 		}
 		return score;
 	}
 	
-	
-
 	function drawdot(col, line){
 		ctx.strokeStyle = "black";
 		ctx.beginPath(); 
@@ -340,218 +277,100 @@
 		ctx.stroke();
 	}
 	
-	 
-    
-         function radiansToDegress(x) {
+  function radiansToDegress(x) {
 		return x * 180 /  Math.PI
 	}
-	
-         function debug(o) {
-		//alert(JSON.stringify(o));
-	}
          
-         function clearcanvas() {
-         	 ctx.clearRect(0, 0, canvas.width , canvas.height) ;
-         	  mousestrokes = [];
-         	  strokeDescriptor = [];
-         	  
-         	  jcss3rotate($('#suggestions').css('background','').html(''),0);
-         }
-         
-         function drawline(x1, y1, x2, y2) {
-         	
+  function clearcanvas() {
+    ctx.clearRect(0, 0, canvas.width , canvas.height) ;
+    mousestrokes = [];
+    strokeDescriptor = [];
+    $('#suggestions').css('background','').html('');
+  }
+  
+  function drawline(x1, y1, x2, y2) {
 		ctx.beginPath();
 		ctx.moveTo(x1,y1);
 		ctx.lineTo(x2,y2);
 		ctx.closePath();
 		ctx.stroke();
-		
-         }
+  }
        
-         function drawrect(x1, y1, width, height) {
-         	ctx.strokeRect(x1, y1, width, height);
-         }
-         	
-        
-         function spin(w) {
-        	     //http://www.the-art-of-web.com/css/css-animation/
-        	     
-        	     $('#suggestions').html(w);
-        	     $(w).animate({fontSize:'250px'}, 1000, spin2);
-        	     
-         }
-         
-         
-         function spin2() {
-        	    var i = 0;
-
-        	    (function (i) {
-        	    	i+=10;
-        	    	var s = (90-Math.abs(90-i))/90*0.5 + 1;
-        	    	if ((i-100)>0) s+= 0.5; // scale('+s+')
-        	    	var css = 'rotate('+i+'deg)'; 
-			$('.sugItem').css('-webkit-transform', css)
-			.css('-moz-transform', css)
-			.css('-o-transform', css);
-			
-	    	     	if(i<180) {
-	        	     	
-        	     	  	window.setTimeout(arguments.callee, 25, i);
-	    	     	} else {
-	    	     		jcss3rotate(
-	    	     		$('#suggestions').css('background', 'red'), 45);
-				jcss3rotate(
-				$('.sugItem'), 135);
-	    	     	}	
-        	    })(i);
-        	    
-        	    
-        	    
-         }
-         
-         function jcss3rotate(j,d) { // A rotation quick shortcut with jquery and css3
-         	 var css = 'rotate('+d+'deg)';
-         	 j.css('-webkit-transform', css)
-         	 .css('-moz-transform', css)
-         	 .css('-o-transform', css);
-         }
-
-         /* The following are experimental code!!! 
-         This is for rendering converted chinese ps fonts
-         */
-         /*********** NOW FOR THE PS RENDERING GOODIES!!! **********/
-         
-         var ctx2, ctx3, customFont;
-         function letsDraw() { 
-        	 ctx2 = document.getElementById('c2').getContext("2d"); //[0]
-             
- 			ctx2.strokeWidth = 3;
- 			
- 			customFont = {
- 				family:'Times',
- 				size:'160pt',
- 				color:'black',
- 				//borderColor:'blue',
- 				borderWidth:'1px',
- 				lineHeight:'1.3em',
- 				coo: {}
- 			};
- 		
-
- 			if(customFont.borderColor) ctx2.strokeStyle = customFont.borderColor;
-			if(customFont.color) ctx2.fillStyle = customFont.color;
-
-			if(customFont.borderWidth) ctx2.lineWidth = parseFloat(customFont.borderWidth);
-
-			//customFont.txt = txt;
-			customFont.scale = 1/(716/parseInt(customFont.size));
-			customFont.cursor = { x:0, y:Math.round(parseInt(customFont.size)*parseFloat(customFont.lineHeight)) };
-			
-			alert(customFont.cursor.y);
-			
-			ctx2.moveTo(customFont.cursor.x, customFont.cursor.y);			
-			customFont.p = { x:customFont.cursor.x, y:customFont.cursor.y };
-			customFont.points = Array();
-
-				//var d12345 = '543 55 hstem\n281 78 vstem\n426 8 hstem\n465 8 hstem\n363 177 vstem\n602 259 vstem';
-			 parse($('#d568').val());
-			 //568 262
-
-			 
-              
-         }
-
-
-         function parse(inp) {
- 			var hsbw = null;
- 			var l = inp.split('\n');
- 			for(var i=0; i<l.length; i++) {
- 				
- 				//gather args
- 				var parts = l[i].split(' ');
- 				
- 				if(parts.length > 0) {
- 					var args = new Array();
- 					for(var j=0; j<parts.length-1; j++) {
- 						args[args.length] = parts[j].replace('null', '');		//huh?
- 					}
+  function drawrect(x1, y1, width, height) {
+    ctx.strokeRect(x1, y1, width, height);
+  }
+  
+  function parse(inp) {
+    var hsbw = null;
+    var l = inp.split('\n');
+    for(var i=0; i<l.length; i++) {
+      //gather args
+      var parts = l[i].split(' ');
+      if(parts.length > 0) {
+        var args = [];
+        for(var j=0; j<parts.length-1; j++) {
+          args[args.length] = parts[j].replace('null', '');
+        }
  	
- 					//execute func
- 					var comm = parts[parts.length-1];
- 					if(comm != '') {
- 						//c3o_debug(comm);
- 						if(typeof(eval('ctx2.'+comm)) == 'function') {
- 							var call = 'ctx2.'+comm+'('+args.join(', ')+'); ';
- 							//alert(call);
- 							if(comm == 'hsbw') {
- 								hsbw = call;
- 							} else {
- 								if(comm.indexOf('move') == -1) { 
- 									var from = {x: customFont.p.x, y: customFont.p.y }
- 									customFont.points[customFont.points.length] = { x:customFont.p.x, y:customFont.p.y }
- 								}
- 								
- 								eval(call);
- 								/*
- 								if(comm.indexOf('move') == -1 && document.getElementById('debug').checked) { 
- 									xx.drawLine(from.x, from.y, x.font.p.x, x.font.p.y);
- 								}*/
- 								//c3o_debug(call+' - '+Math.round(from.x)+'/'+Math.round(from.y)+' - '+Math.round(x.font.p.x)+'/'+Math.round(x.font.p.y));
- 							}
- 						}
- 					}
- 				}
- 			}
- 			if(hsbw != null) { //hsbw needs to be at end, not start
- 				//c3o_debug(hsbw);
- 				eval(hsbw);
- 			}
- 		}
+      //execute func
+      var comm = parts[parts.length-1];
+      if(comm) {
+        if(typeof(eval('ctx2.'+comm)) == 'function') {
+          var call = 'ctx2.'+comm+'('+args.join(', ')+'); ';
+          if(comm == 'hsbw') {
+            hsbw = call;
+          } else {
+            if(comm.indexOf('move') == -1) {
+              var from = {x: customFont.p.x, y: customFont.p.y }
+              customFont.points[customFont.points.length] = { x:customFont.p.x, y:customFont.p.y }
+            }
+            eval(call);
+          }
+        }
+      }
+      }
+    }
+    if(hsbw) { //hsbw needs to be at end, not start
+      eval(hsbw);
+    }
+  }
           
-         
-         
-         
-      		function counterclockwise(points) { 
-			summe = 0;
-			for(i=0; i<points.length; i++) {
-				var next2 = (i+2) % points.length;
-				var next1 = (i+1) % points.length;
-				dx1 = points[next1].x-points[i].x;
-				dy1 = points[next1].y-points[i].y;
-				dx2 = points[next2].x-points[next1].x;
-				dy2 = points[next2].y-points[next1].y;
-				l1 = Math.sqrt(Math.pow(dx1,2)+Math.pow(dy1,2));
-				l2 = Math.sqrt(Math.pow(dx2,2)+Math.pow(dy2,2));
-				l1 = l1 > 0 ? l1 : 1;
-				l2 = l2 > 0 ? l2 : 1;
-				nx1 = dx1/l1;
-				ny1 = dy1/l1;
-				nx2 = dx2/l2;
-				ny2 = dy2/l2;
-				normx = -ny1;
-				normy = nx1;
-				p = normx*nx2 + normy*ny2;
-				p2 = nx1*nx2 + ny1*ny2;
-				teil = Math.atan2(p, p2);
-				//if(parseFloat(teil) == teil) {
-				summe += teil;
-				//c3o_debug('+ '+teil+' = '+summe);
-			}
-			//c3o_debug(expand_points(points) + ' = '+ Math.round(summe));
-			return (Math.round(summe) >= 0);
-		}
+  function counterclockwise(points) {
+    var summe = 0;
+    for(i=0; i<points.length; i++) {
+      var next2 = (i+2) % points.length;
+      var next1 = (i+1) % points.length;
+      dx1 = points[next1].x-points[i].x;
+      dy1 = points[next1].y-points[i].y;
+      dx2 = points[next2].x-points[next1].x;
+      dy2 = points[next2].y-points[next1].y;
+      l1 = Math.sqrt(Math.pow(dx1,2)+Math.pow(dy1,2));
+      l2 = Math.sqrt(Math.pow(dx2,2)+Math.pow(dy2,2));
+      l1 = l1 > 0 ? l1 : 1;
+      l2 = l2 > 0 ? l2 : 1;
+      nx1 = dx1/l1;
+      ny1 = dy1/l1;
+      nx2 = dx2/l2;
+      ny2 = dy2/l2;
+      normx = -ny1;
+      normy = nx1;
+      p = normx*nx2 + normy*ny2;
+      p2 = nx1*nx2 + ny1*ny2;
+      teil = Math.atan2(p, p2);
+      summe += teil;
+    }
+    return (Math.round(summe) >= 0);
+  }
 
-		function expand_points(points) {
+  function expand_points(points) {
 			var out = '';
 			for(var i=0; i<points.length; i++) {
 				out += '{x:'+Math.round(points[i].x)+',y:'+Math.round(points[i].y)+'}';
 				if(i<points.length-1) { out += ', '; }
 			}
 			return out;
-		}
-         
-         		//postscript functions
-		
+  }
+    //postscript functions
 		CanvasRenderingContext2D.prototype.closepath = function() {
 			if(counterclockwise(customFont.points)) {
 				ctx2.globalCompositeOperation = 'xor';
@@ -627,32 +446,5 @@
 			customFont.p.x += Math.round(dx*customFont.scale);
 			this.moveTo(customFont.p.x, customFont.p.y);
 		}
-
-		function crazy() {
-			var compare = $('#e').val();
-			var found = false;
-			for (var c in chinesestrokes) {
-				cd  = chinesestrokes[c];
-				
-				$('#c').html(chineseword(cd[0]));
-				if ($('#c').html()==compare) {
-					found = true;
-					$('#c').append(' ' + h2d(cd[0]) + ' ' + cd[0]);
-						break;
-				}
-				 
-			}
-			alert(found);
-			// kong html enitity 24656 font code 6050  0-->dbzb35  /_d_3130
-		}
 </script>
-
-<script> 
-try {
-var pageTracker = _gat._getTracker("UA-7549263-1");
-pageTracker._trackPageview();
-} catch(err) {}
-</script> 
-
-
 </body></html>
