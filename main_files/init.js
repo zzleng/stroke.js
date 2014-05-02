@@ -135,9 +135,7 @@ function analyze(stroke) {
   for (var i=0;((i<9)&&possible[i]);i++) {
     var sug = document.createElement('span');
     sug.addEventListener('click', function(e){
-      //document.getElementById('wordsOut').value += sug.innerHTML;
-      $('#wordsOut').append(this.innerHTML);
-      //$(this).html()
+      document.getElementById('wordsOut').value += this.innerHTML;
     }, false);
     sug.innerHTML = chineseword(possible[i].w);
     sug.setAttribute('class', 'sugItem');
