@@ -57,23 +57,20 @@
 	}
 
 	function dragClick(x,y) {
-		var d = new Date();
-		if ((x==lastPt.x) && (y==lastPt.y)) return ;
-		
-    lastPt = {x:x,y:y};
-		strokeXYs.push(lastPt);
-  
-		ctx.lineTo(x,y);
-		ctx.stroke();
+      if ((x==lastPt.x) && (y==lastPt.y)) return;
+      lastPt = {x:x,y:y};
+      strokeXYs.push(lastPt);
+      ctx.lineTo(x,y);
+      ctx.stroke();
 	}
 	
 	function endClick(x,y) {
-		clicking = false;
-		ctx.lineTo(x,y);
-		ctx.stroke();
-		strokeXYs.push({x:x,y:y});
-		mousestrokes.push(strokeXYs);
-		analyze(strokeXYs);
+	  clicking = false;
+	  ctx.lineTo(x,y);
+	  ctx.stroke();
+	  strokeXYs.push({x:x,y:y});
+	  mousestrokes.push(strokeXYs);
+	  analyze(strokeXYs);
 	}
 	
   function chineseword(a) { return ('\&#0'+parseInt(a,16)+';'); }
@@ -161,7 +158,6 @@
 		var sug = document.createElement('span');
 		
 		sug.addEventListener('click', function(e){
-		  //console.log(sug.innerHTML);
 		  //document.getElementById('wordsOut').value += sug.innerHTML;
 		  $('#wordsOut').append(this.innerHTML);
 		  //$(this).html()
