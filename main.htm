@@ -159,14 +159,11 @@
 	  document.getElementById('suggestions').innerHTML = '';
 	  for (var i=0;((i<9)&&possible[i]);i++) {
 		var sug = document.createElement('span');
-		/*
-		  $(sug).click(function() {
-		    $('#wordsOut').append($(this).html());
-		  }).append(chineseword(possible[i].w));
-		*/
 		
-		sug.addEventListener('click', function(){
-		  console.log('ooo');	
+		sug.addEventListener('click', function(e){
+		  //console.log(sug.innerHTML);
+		  //document.getElementById('wordsOut').value += sug.innerHTML;
+		  $('#wordsOut').append($(this).html());	
 		}, false);
 		
 		sug.innerHTML = chineseword(possible[i].w);
