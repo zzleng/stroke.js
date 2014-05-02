@@ -136,37 +136,43 @@
 		var bestmatch = '';
 		var bestscore = 0;
 		for (var c in chinesestrokes) {
-			var cd  = chinesestrokes[c];
-			var cdi = [];
-			for (var i=1;i<cd.length;i++) {
-				cdi.push({d:cd[i][0], l:cd[i][1]});
-			}
-			
-			var score = match( strokeDescriptor, cdi);
-			if (score>-1) {
-				possible.push({w:cd, s:score, huh:cdi});
-			}
-			
-			if (score>bestscore) {
-				bestmatch = cd;
-				bestscore = score;
-			}
+		  var cd  = chinesestrokes[c];
+		  var cdi = [];
+		  for (var i=1;i<cd.length;i++) {
+			cdi.push({d:cd[i][0], l:cd[i][1]});
+		  }
+		  
+		  var score = match( strokeDescriptor, cdi);
+		  if (score>-1) {
+			possible.push({w:cd, s:score, huh:cdi});
+		  }
+		  
+		  if (score>bestscore) {
+			bestmatch = cd;
+			bestscore = score;
+		  }
 		}
 		possible.sort(function(a,b){
-      return b.s - a.s; //.length
-    });
+		  return b.s - a.s; //.length
+		 });
 		
-		document.getElementById('suggestions').innerHTML = '';
-		for (var i=0;((i<9)&&possible[i]);i++) {
-			var sug = document.createElement('span');
-			
-			$(sug).click(function() {
-				$('#wordsOut').append($(this).html());
-			}).append(chineseword(possible[i].w));
-
-			sug.setAttribute('class', 'sugItem');
-      document.getElementById('suggestions').appendChild(sug);
-		}
+	  document.getElementById('suggestions').innerHTML = '';
+	  for (var i=0;((i<9)&&possible[i]);i++) {
+		var sug = document.createElement('span');
+		/*
+		  $(sug).click(function() {
+		    $('#wordsOut').append($(this).html());
+		  }).append(chineseword(possible[i].w));
+		*/
+		
+		sug.addEventListener('click', function(){
+		  console.log('ooo');	
+		}, false);
+		
+		sug.innerHTML = chineseword(possible[i].w);
+		sug.setAttribute('class', 'sugItem');
+		document.getElementById('suggestions').appendChild(sug);
+	  }
 	}
 	
 	function analyzeBestMatch(bestmatch) {
