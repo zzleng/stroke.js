@@ -3,9 +3,8 @@ body {
 }
 
 #main{
-  margin:0 auto;
+  margin: 0 auto;
   width : 600px;
-  height: 450px;
 }
 
 #stroke_input_canvas {
