@@ -21,19 +21,18 @@ body {
 }
 
 #wordsOut {
-	width:500px;
-	height:100px;
-	padding:5px;
-	font-size:26px;
+  width:500px;
+  height:100px;
+  padding:5px;
+  font-size:26px;
 }
 
 .sugItem {
-	display:block;
-	float:left;
-	cursor: pointer;
-	
+  display:block;
+  float:left;
+  cursor: pointer;
 }
 
 .sugItem:hover {
-	background:white;
+  background:white;
 }
