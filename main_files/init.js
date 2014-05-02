@@ -1,30 +1,23 @@
 var chinesestrokes = strokes;
-var clicking = false;
 
 // In memory data struct
 var mousestrokes = [];
-
 var canvas = document.getElementById('stroke_input_canvas');
 var ctx = canvas.getContext("2d");
 
+var clicking = false;
 canvas.addEventListener("mousemove", function(e){
   if (clicking) {
-    var x = e.pageX - canvas.offsetLeft;
-    var y = e.pageY - canvas.offsetTop;
-    dragClick(x,y);
+    dragClick((e.pageX - canvas.offsetLeft), (e.pageY - canvas.offsetTop));
   }
 }, false);
 
 canvas.addEventListener("mousedown", function(e){
-  var x = e.pageX - canvas.offsetLeft;
-  var y = e.pageY - canvas.offsetTop;
-  startClick(x,y);
+  startClick((e.pageX - canvas.offsetLeft), (e.pageY - canvas.offsetTop));
 }, false);
 
 canvas.addEventListener("mouseup", function(e){
-  var x = e.pageX - canvas.offsetLeft;
-  var y = e.pageY - canvas.offsetTop;
-  endClick(x,y);
+  endClick((e.pageX - canvas.offsetLeft), (e.pageY - canvas.offsetTop));
 }, false);
 
 var strokeXYs ;
@@ -74,9 +67,10 @@ function analyze(stroke) {
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(corners[0].x,corners[0].y);
-  for (var i in corners) {
-	  ctx.lineTo(corners[i].x,corners[i].y);
-  }
+  
+  corners.forEach(function(corner){
+    ctx.lineTo(corner.x , corner.y);
+  });
   ctx.stroke();
   
   // Getting the diagonal normalizer here.
@@ -194,12 +188,12 @@ function match(strokeDescriptor, charDescriptor) {
     //Direction Score
     var ds = Math.abs(strokeDescriptor[i].d - charDescriptor[i].d);
     if (ds > Math.PI) ds = 2*Math.PI - ds;
-      ds = 100* ( Math.PI*2 - ds)/(Math.PI*2);
-      //ds = Math.min(ds,100);
+    ds = 100* ( Math.PI*2 - ds)/(Math.PI*2);
+    //ds = Math.min(ds,100);
       
-      score +=  ds+  dl*charDescriptor[i].l;
-   }
-   return score;
+    score +=  ds+  dl*charDescriptor[i].l;
+  }
+  return score;
 }
 
 function clearcanvas() {
