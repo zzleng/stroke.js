@@ -163,7 +163,8 @@
 		sug.addEventListener('click', function(e){
 		  //console.log(sug.innerHTML);
 		  //document.getElementById('wordsOut').value += sug.innerHTML;
-		  $('#wordsOut').append($(this).html());	
+		  $('#wordsOut').append(this.innerHTML);
+		  //$(this).html()
 		}, false);
 		
 		sug.innerHTML = chineseword(possible[i].w);
