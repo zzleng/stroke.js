@@ -7,7 +7,7 @@ body {
   width : 600px;
 }
 
-#stroke_input_canvas {
+#stroke_input {
   margin: 0 auto;
   background-color:#3b3b3b;
   cursor: pointer;
